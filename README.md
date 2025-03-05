@@ -1,0 +1,2 @@
+# EventG
+workspace template
