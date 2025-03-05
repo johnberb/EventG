@@ -27,9 +27,26 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "customcss/fontawesome-free/css/all.min.css",
+              "customcss/nunito.css",
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "customcss/sb-admin-2.css",
+              "customcss/sb-admin-2.min.css",
+              "customcss/fontawesome-free/css/fontawesome.min.css",
+              "customcss/datatables/datatables.bootstrap4.min.css"
+              
             ],
-            "scripts": []
+            "scripts": ["node_modules/@popperjs/core/dist/umd/popper.min.js", 
+              "node_modules/bootstrap/dist/js/bootstrap.min.js",
+              "customcss/jquery/jquery.min.js",
+              "customcss/bootstrap/js/bootstrap.bundle.min.js",
+              "customcss/jquery-easing/jquery.easing.min.js",
+              "customcss/js/sb-admin-2.min.js",
+              "customcss/datatables/jquery.dataTables.min.js",
+              "customcss/datatables/dataTables.bootstrap4.min.js",
+              "customcss/js/demo/datatables-demo.js"
+              ]
           },
           "configurations": {
             "production": {
@@ -92,5 +109,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
