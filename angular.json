@@ -34,7 +34,7 @@
               "customcss/sb-admin-2.css",
               "customcss/sb-admin-2.min.css",
               "customcss/fontawesome-free/css/fontawesome.min.css",
-              "customcss/datatables/datatables.bootstrap4.min.css"
+              "customcss/datatables/dataTables.bootstrap4.min.css"
               
             ],
             "scripts": ["node_modules/@popperjs/core/dist/umd/popper.min.js", 
