@@ -25,15 +25,21 @@ export class ExcelService {
       fileReader.onload = (e: any) => {
         const arrayBuffer = e.target.result;
         const workbook = new ExcelJS.Workbook();
-
-        // Read the file
-        workbook.xlsx.load(arrayBuffer).then(() => {
-          const worksheet = workbook.worksheets[0]; // Get the first sheet
-          const jsonData = this.sheetToJson(worksheet); // Convert sheet to JSON
-          resolve(jsonData);
-        }).catch((error) => {
-          reject(error);
-        });
+  
+        workbook.xlsx.load(arrayBuffer)
+          .then(() => {
+            const worksheet = workbook.worksheets[0]; // Get the first sheet
+            if (!worksheet) {
+              reject(new Error('No worksheets found in the Excel file.'));
+              return;
+            }
+  
+            const jsonData = this.sheetToJson(worksheet); // Convert sheet to JSON
+            resolve(jsonData);
+          })
+          .catch((error) => {
+            reject(error);
+          });
       };
       fileReader.onerror = (error) => {
         reject(error);
@@ -45,13 +51,17 @@ export class ExcelService {
   // Helper method to convert a worksheet to JSON
   private sheetToJson(worksheet: ExcelJS.Worksheet): any[] {
     const jsonData: any[] = [];
+    const columnCount = worksheet.columnCount; // Get the total number of columns
+  
     worksheet.eachRow((row, rowNumber) => {
       const rowData: any[] = [];
-      row.eachCell((cell) => {
-        rowData.push(cell.value);
-      });
+      for (let col = 1; col <= columnCount; col++) {
+        const cell = row.getCell(col); // Get the cell at the current column
+        rowData.push(cell.value === undefined ? '' : cell.value); // Replace undefined with empty string
+      }
       jsonData.push(rowData);
     });
+  
     return jsonData;
   }
 
