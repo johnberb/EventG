@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { RegisterComponent } from './register/register.component';
 import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { TerminalCurrentStatusComponent } from './terminal-current-status/terminal-current-status.component';
 
 
 export const routes: Routes = [
@@ -22,5 +23,8 @@ export const routes: Routes = [
     },
     {
         path:'dashboard',
-       component:DashboardComponent    }
+       component:DashboardComponent    },
+       
+    {path:'terminal-current-status',
+    component:TerminalCurrentStatusComponent}
 ];
