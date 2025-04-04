@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ExcelService } from '../services/excel.service';
 import { CommonModule } from '@angular/common';
 
+
 @Component({
   selector: 'app-terminal-current-status',
   templateUrl: './terminal-current-status.component.html',
@@ -9,59 +10,75 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule]
 })
 export class TerminalCurrentStatusComponent {
-  file: File | null = null; // Stores the selected file
-  uploadStatus: string = ''; // Stores upload status messages
-  fileData: any[] = []; // Stores parsed file data
+  file: File | null = null;
+  uploadStatus: string = '';
+  fileData: any[] = [];
 
   constructor(private excelService: ExcelService) {}
 
-  // Handles file selection
-  onFileChange(event: any) {
+  onFileChange(event: any): void {
     const fileList: FileList = event.target.files;
     if (fileList.length > 0) {
       this.file = fileList[0];
-      this.uploadStatus = 'File selected: ' + this.file.name;
+      this.uploadStatus = `File selected: ${this.file.name}`;
 
-      // Calls the service to parse the file
-      this.excelService.parseExcel(this.file).then((data) => {
-        this.fileData = data; // Stores parsed data
-        console.log(this.fileData); // Debugging
-      }).catch((error) => {
-        console.error('Error parsing file:', error);
-        this.uploadStatus = 'Error parsing file.';
+      this.excelService.parseExcel(this.file).then((data: any[]) => {
+        this.fileData = data;
+      }).catch((error: any) => {
+        console.error('Error:', error);
+        this.uploadStatus = 'Error parsing file';
+        this.fileData = [];
       });
     }
   }
 
-  // Handles file upload
-  uploadFile() {
+  uploadFile(): void {
     if (this.file) {
-      // Calls the service to upload the file
       this.excelService.uploadFile(this.file).subscribe({
         next: (response) => {
-          this.uploadStatus = 'File uploaded successfully!';
-          console.log('Upload response:', response);
+          this.uploadStatus = 'Upload successful!';
         },
         error: (error) => {
-          this.uploadStatus = 'Error uploading file.';
+          this.uploadStatus = 'Upload failed';
           console.error('Upload error:', error);
-        },
+        }
       });
-    } else {
-      this.uploadStatus = 'No file selected.';
     }
   }
 
-  // Helper method to get headers (keys) from the first object
+  downloadJson(): void {
+    if (this.fileData.length === 0) {
+      this.uploadStatus = 'No data to download';
+      return;
+    }
+
+    try {
+      // Convert data to JSON string
+      const jsonString = JSON.stringify(this.fileData, null, 2);
+      
+      // Create blob and download
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      
+      // Create download link
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'terminal_data.json';
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      this.uploadStatus = 'JSON download started!';
+    } catch (error) {
+      console.error('Error generating JSON:', error);
+      this.uploadStatus = 'Error generating download';
+    }
+  }
+
   getHeaders(): string[] {
-    if (this.fileData.length > 0) {
-      return Object.keys(this.fileData[0]);
-    }
-    return [];
-  }
-
-  // Helper method to get values from an object
-  getValues(row: any): any[] {
-    return Object.values(row);
+    return this.fileData.length > 0 ? Object.keys(this.fileData[0]) : [];
   }
 }
