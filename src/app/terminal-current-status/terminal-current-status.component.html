@@ -1,20 +1,22 @@
 <div>
     <h2>Terminal Current Status</h2>
-    <input type="file" (change)="onFileChange($event)" />
-    <button (click)="uploadFile()">Upload</button>
+    <input  class="input-group-mb3"type="file" (change)="onFileChange($event)" />
+    <button class="btn btn-round btn-bg-primary"    (click)="uploadFile()">Upload</button>
     <p>{{ uploadStatus }}</p>
   
     <!-- Display the file data in a table -->
     <table *ngIf="fileData.length > 0">
       <thead>
         <tr>
-          <th *ngFor="let header of fileData[0]">{{ header }}</th>
+          <!-- Loop through the keys of the first object to get headers -->
+          <th *ngFor="let header of getHeaders()">{{ header }}</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let row of fileData.slice(1)">
-          <td *ngFor="let cell of row">{{ cell }}</td>
+        <!-- Loop through each row (object) in fileData -->
+        <tr *ngFor="let row of fileData">
+          <!-- Loop through the values of each object -->
+          <td *ngFor="let value of getValues(row)">{{ value }}</td>
         </tr>
       </tbody>
     </table>
-  </div>

@@ -9,22 +9,23 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule]
 })
 export class TerminalCurrentStatusComponent {
-  file: File | null = null; // Variable to store the selected file
-  uploadStatus: string = ''; // Variable to store upload status messages
-  fileData: any[] = []; // Variable to store parsed file data
+  file: File | null = null; // Stores the selected file
+  uploadStatus: string = ''; // Stores upload status messages
+  fileData: any[] = []; // Stores parsed file data
 
   constructor(private excelService: ExcelService) {}
 
-  // Method to handle file selection
+  // Handles file selection
   onFileChange(event: any) {
     const fileList: FileList = event.target.files;
     if (fileList.length > 0) {
       this.file = fileList[0];
       this.uploadStatus = 'File selected: ' + this.file.name;
 
-      // Parse the file and display its contents
+      // Calls the service to parse the file
       this.excelService.parseExcel(this.file).then((data) => {
-        this.fileData = data;
+        this.fileData = data; // Stores parsed data
+        console.log(this.fileData); // Debugging
       }).catch((error) => {
         console.error('Error parsing file:', error);
         this.uploadStatus = 'Error parsing file.';
@@ -32,9 +33,10 @@ export class TerminalCurrentStatusComponent {
     }
   }
 
-  // Method to upload the file
+  // Handles file upload
   uploadFile() {
     if (this.file) {
+      // Calls the service to upload the file
       this.excelService.uploadFile(this.file).subscribe({
         next: (response) => {
           this.uploadStatus = 'File uploaded successfully!';
@@ -48,5 +50,18 @@ export class TerminalCurrentStatusComponent {
     } else {
       this.uploadStatus = 'No file selected.';
     }
+  }
+
+  // Helper method to get headers (keys) from the first object
+  getHeaders(): string[] {
+    if (this.fileData.length > 0) {
+      return Object.keys(this.fileData[0]);
+    }
+    return [];
+  }
+
+  // Helper method to get values from an object
+  getValues(row: any): any[] {
+    return Object.values(row);
   }
 }
