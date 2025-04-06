@@ -6,25 +6,30 @@
       type="file" 
       class="form-control"
       (change)="onFileChange($event)"
-      accept=".xlsx, .xls"
+      accept=".xlsx, .xls, .json"
     />
+    <small class="form-text text-muted">Upload Excel (.xlsx, .xls) or JSON (.json) files</small>
   </div>
   
   <div class="mb-3">
     <button 
       class="btn btn-primary me-2"
-      (click)="uploadFile()"
-      [disabled]="!file"
+      (click)="uploadData()"
+      [disabled]="fileData.length === 0 || isProcessing"
     >
-      Upload
+      <span *ngIf="!isProcessing">Upload Data</span>
+      <span *ngIf="isProcessing">
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Uploading...
+      </span>
     </button>
     
     <button 
-      class="btn btn-success"
+      class="btn btn-success me-2"
       (click)="downloadJson()"
       [disabled]="fileData.length === 0"
     >
-      Download as JSON
+      Download JSON
     </button>
   </div>
   

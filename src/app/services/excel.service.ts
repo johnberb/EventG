@@ -1,7 +1,7 @@
 // excel.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpEvent } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { catchError, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,34 +11,28 @@ export class ExcelService {
 
   constructor(private http: HttpClient) {}
 
-  // Parse Excel file (frontend parsing - if you still need it)
-  parseExcel(file: File): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      if (!file || !file.name.endsWith('.xlsx')) {
-        reject(new Error('Invalid file type. Please upload an Excel file.'));
-        return;
-      }
+  parseExcel(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    return this.http.post(`${this.apiUrl}/upload-excel`, formData).pipe(
+      catchError(error => {
+        console.error('API Error:', error);
+        throw new Error('Failed to parse Excel file. Status: ' + error.status);
+      })
+    );
+  }
 
-      // If you want to keep frontend parsing, implement it here
-      // Otherwise, just call the backend API:
-      const formData = new FormData();
-      formData.append('excelFile', file);
-      
-      this.http.post<any[]>(`${this.apiUrl}/upload`, formData).subscribe({
-        next: (data) => resolve(data),
-        error: (err) => reject(err)
-      });
+  uploadJson(jsonData: any, originalFilename: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/upload-json`, {
+      data: jsonData,
+      originalFilename: originalFilename
     });
   }
 
-  // Upload file to backend
-  uploadFile(file: File): Observable<HttpEvent<any>> {
-    const formData = new FormData();
-    formData.append('excelFile', file);
-
-    return this.http.post(`${this.apiUrl}/upload`, formData, {
-      reportProgress: true,
-      observe: 'events'
+  downloadJson(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/download-json`, {
+      responseType: 'blob'
     });
   }
 }
