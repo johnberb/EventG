@@ -49,22 +49,22 @@ export class TerminalCurrentStatusComponent {
 
   private displayExcelFile(file: File): void {
     this.uploadStatus = 'Processing Excel file...';
+    this.isProcessing = true;
     
-    this.excelService.parseExcel(file).subscribe({
+    this.excelService.uploadExcel(file).subscribe({
       next: (response: any) => {
         if (response?.data?.length > 0) {
           this.fileData = response.data;
-          
-          // Dynamic headers detection
-          const detectedHeaders = this.getHeaders();
-          this.uploadStatus = `Excel processed. Detected columns: ${detectedHeaders.join(', ')}`;
+          this.uploadStatus = `Processed ${response.data.length} rows`;
         } else {
-          this.uploadStatus = 'No valid data found in Excel file';
+          this.uploadStatus = response?.message || 'No data received';
         }
+        this.isProcessing = false;
       },
       error: (error) => {
-        this.uploadStatus = 'Error processing Excel file';
+        this.uploadStatus = `Error: ${error.message}`;
         console.error('Error:', error);
+        this.isProcessing = false;
       }
     });
   }
@@ -78,17 +78,16 @@ export class TerminalCurrentStatusComponent {
     this.isProcessing = true;
     this.uploadStatus = 'Uploading data...';
   
-    // Get original filename or use default
     const originalFilename = this.file?.name || 'terminal_data';
     
     this.excelService.uploadJson(this.fileData, originalFilename).subscribe({
       next: (response: any) => {
-        this.uploadStatus = `Data saved as ${response.fileName}`;
+        this.uploadStatus = `Successfully uploaded ${response.insertedCount} records`;
         this.isProcessing = false;
       },
       error: (error) => {
-        this.uploadStatus = 'Upload failed';
-        console.error(error);
+        this.uploadStatus = `Upload failed: ${error.message}`;
+        console.error('Upload error:', error);
         this.isProcessing = false;
       }
     });
@@ -117,6 +116,19 @@ export class TerminalCurrentStatusComponent {
   }
 
   getHeaders(): string[] {
-    return this.fileData.length > 0 ? Object.keys(this.fileData[0]) : [];
+    if (this.fileData.length === 0) return [];
+    
+    const allKeys = new Set<string>();
+    this.fileData.forEach(row => {
+      Object.keys(row).forEach(key => allKeys.add(key));
+    });
+    
+    return Array.from(allKeys);
+  }
+
+  formatCellValue(value: any): string {
+    if (value === null || value === undefined) return '';
+    if (typeof value === 'object') return JSON.stringify(value);
+    return value.toString();
   }
 }
