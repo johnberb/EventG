@@ -48,7 +48,7 @@
       <tbody>
         <tr *ngFor="let row of fileData; let i = index">
           <td *ngFor="let header of getHeaders()">
-            {{ row[header] !== null && row[header] !== undefined ? row[header] : '' }}
+            {{ formatCellValue(row[header]) }}
           </td>
         </tr>
       </tbody>
