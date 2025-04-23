@@ -4,7 +4,7 @@ import { RegisterComponent } from './register/register.component';
 import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { TerminalCurrentStatusComponent } from './terminal-current-status/terminal-current-status.component';
-
+import { EarningsDashboardComponent } from './earnings-dashboard/earnings-dashboard.component'
 
 export const routes: Routes = [
 
@@ -23,7 +23,10 @@ export const routes: Routes = [
     },
     {
         path:'dashboard',
-       component:DashboardComponent    },
+       component:DashboardComponent ,
+       children: [
+        { path: 'earnings', component: EarningsDashboardComponent }
+      ]   },
        
     {path:'terminal-current-status',
     component:TerminalCurrentStatusComponent}

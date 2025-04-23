@@ -1,0 +1,25 @@
+    <div class="card-body">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Terminal ID</th>
+            <th>Description</th>
+            <th>Duration</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of earningsData">
+            <td>{{ item.terminalId }}</td>
+            
+            <td>{{ item.durationDisplay }}</td>
+            <td [ngClass]="{
+              'text-success': item.currentStatus === 'ACTIVE',
+              'text-danger': item.currentStatus === 'OUT_OF_SERVICE'
+            }">
+              {{ item.currentStatus }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
